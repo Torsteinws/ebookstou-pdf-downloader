@@ -4,11 +4,10 @@ from os.path import isfile, join
 import requests
 from PIL import Image
 
+# Download images from a base URL and save them to a directory
 def download_images(base_url, dir_name): 
-
     i = 1
     while True:
-
         # Send a GET request to the image URL
         image_url = f"{base_url}/{i}.jpg"
         response = requests.get(image_url)  
@@ -32,6 +31,8 @@ def download_images(base_url, dir_name):
 
         i += 1
 
+
+# Get a list of all paths to images in a directory
 def get_all_images(dir):
     images = []
     for filename in listdir(dir):
@@ -42,14 +43,19 @@ def get_all_images(dir):
                 images.append(path)
     return images    
 
+
+# Open images from a list of paths
 def open_images(image_paths):
     images = []
     for image_path in image_paths:
         images.append(Image.open(image_path))
     return images
 
-def convert_images_to_pdf(image_dir, pdf_path):
 
+# Find all images in a directory and concatenate them to a PDF
+def concat_images_to_pdf(image_dir, pdf_path):
+
+    # Find an open all images in the directory
     image_paths = get_all_images(image_dir)
     images = open_images(image_paths)
     
@@ -62,7 +68,8 @@ def convert_images_to_pdf(image_dir, pdf_path):
     first_image = images[0]
     pdf = first_image.convert('RGB').save(pdf_path, save_all=True, append_images=images[1:])
 
-    print(f"\nPdf path: {os.path.abspath(pdf_path)}\n")
+    print(f"\nPdf created at: {os.path.abspath(pdf_path)}\n")
+
 
 def main():
     image_dir = "images"
@@ -72,9 +79,10 @@ def main():
         os.makedirs(image_dir)
         download_images(base_url, image_dir)
     else: 
-        print(f"Directory {image_dir} already exists. Skipping download")
+        print(f"\nSkipping download, found source images in directory: {os.path.abspath(image_dir)}")
 
-    convert_images_to_pdf(image_dir, "result.pdf")
+    concat_images_to_pdf(image_dir, "result.pdf")
+
 
 if __name__ == "__main__":
     main()
