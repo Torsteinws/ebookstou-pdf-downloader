@@ -6,21 +6,31 @@ from PIL import Image
 
 def download_images(base_url, dir_name): 
 
-    for i in range(1, 71):  # Iterate from 1 to 70
+    i = 1
+    while True:
 
         # Send a GET request to the image URL
         image_url = f"{base_url}/{i}.jpg"
         response = requests.get(image_url)  
 
+        # We have iterated over all images when we get a 404 response
+        if response.status_code == 404:
+            print(f"\n-----------------------------------\nDownloaded {i} images\n-----------------------------------\n" if i > 1 else "No images found")
+            return
+
         # Stop if the request was unsuccessful
         if response.status_code != 200:
-            return print(f"Failed to download images: {response.status_code} {response.reason}")
+            print(f"Exiting with unexpected response: {response.status_code} {response.reason}")
+            return
 
         # Save the image to a file
-        filename = f"{dir_name}/{i:03d}.jpg"
+        filename = f"{dir_name}/{i:04d}.jpg"
         with open(filename, "wb") as file:
             file.write(response.content)  
+            
         print(f"Downloaded: {filename}")
+
+        i += 1
 
 
 def convert_images_to_pdf(image_dir, pdf_path):
