@@ -2,7 +2,7 @@
 .venv
 
 # Folder for dowlnoaded images
-raw_images
+images
 
 # Output files
 *.pdf

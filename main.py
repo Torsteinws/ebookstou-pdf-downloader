@@ -48,7 +48,7 @@ def convert_images_to_pdf(image_dir, pdf_path):
     print(f"\nPdf path: {os.path.abspath(pdf_path)}\n")
 
 def main():
-    image_dir = "raw_images"
+    image_dir = "images"
     base_url = "http://readonline.ebookstou.org/flipbook/40908/files/mobile"
 
     if not os.path.exists(image_dir):
