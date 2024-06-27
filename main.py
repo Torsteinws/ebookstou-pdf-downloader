@@ -23,9 +23,8 @@ def download_images(base_url, dir_name):
         print(f"Downloaded: {filename}")
 
 
-def convert_images_to_pdf(image_dir, output_filename):
+def convert_images_to_pdf(image_dir, pdf_path):
 
-    pdf_path = f"{image_dir}/{output_filename}.pdf"
     if os.path.exists(pdf_path):
         return print(f"PDF already exists: {pdf_path}")
 
@@ -49,7 +48,7 @@ def main():
         os.makedirs(image_dir)
         download_images(base_url, image_dir)
 
-    convert_images_to_pdf(image_dir, "0_book")
+    convert_images_to_pdf(image_dir, "result.pdf")
 
 if __name__ == "__main__":
     main()
