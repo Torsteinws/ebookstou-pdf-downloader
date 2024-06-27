@@ -4,9 +4,8 @@ from os.path import isfile, join
 import requests
 from PIL import Image
 
-def download_images(): 
-    base_url = "http://readonline.ebookstou.org/flipbook/40908/files/mobile"
-    
+def download_images(base_url, dir_name): 
+
     for i in range(1, 71):  # Iterate from 1 to 70
 
         # Send a GET request to the image URL
@@ -18,7 +17,7 @@ def download_images():
             return print(f"Failed to download images: {response.status_code} {response.reason}")
 
         # Save the image to a file
-        filename = f"raw_images/{i:03d}.jpg"
+        filename = f"{dir_name}/{i:03d}.jpg"
         with open(filename, "wb") as file:
             file.write(response.content)  
         print(f"Downloaded: {filename}")
@@ -44,10 +43,11 @@ def convert_images_to_pdf(image_dir, output_filename):
 
 def main():
     image_dir = "raw_images"
+    base_url = "http://readonline.ebookstou.org/flipbook/40908/files/mobile"
 
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
-        download_images()
+        download_images(base_url, image_dir)
 
     convert_images_to_pdf(image_dir, "0_book")
 
