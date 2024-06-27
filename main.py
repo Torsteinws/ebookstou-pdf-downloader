@@ -15,7 +15,7 @@ def download_images(base_url, dir_name):
 
         # We have iterated over all images when we get a 404 response
         if response.status_code == 404:
-            print(f"\n-----------------------------------\nDownloaded {i} images\n-----------------------------------\n" if i > 1 else "No images found")
+            print(f"\n-----------------------------------\nDownloaded {i - 1} images\n-----------------------------------" if i > 1 else "No images found")
             return
 
         # Stop if the request was unsuccessful
@@ -35,9 +35,6 @@ def download_images(base_url, dir_name):
 
 def convert_images_to_pdf(image_dir, pdf_path):
 
-    if os.path.exists(pdf_path):
-        return print(f"PDF already exists: {pdf_path}")
-
     images = [Image.open(join(image_dir, f)) for f in listdir(image_dir) if isfile(join(image_dir, f)) and f.lower().split('.')[-1] in ('jpg', 'jpeg', 'png')]
     
     # Check if any images were found
@@ -48,7 +45,7 @@ def convert_images_to_pdf(image_dir, pdf_path):
     # Create a new PDF with the same mode, size, and format as the first image
     pdf = first_image.convert('RGB').save(pdf_path, save_all=True, append_images=images[1:])
 
-    print(f"Successfully converted images to PDF: {pdf_path}")
+    print(f"\nPdf path: {os.path.abspath(pdf_path)}\n")
 
 def main():
     image_dir = "raw_images"
@@ -57,6 +54,8 @@ def main():
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
         download_images(base_url, image_dir)
+    else: 
+        print(f"Directory {image_dir} already exists. Skipping download")
 
     convert_images_to_pdf(image_dir, "result.pdf")
 
