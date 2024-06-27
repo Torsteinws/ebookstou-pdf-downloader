@@ -1,6 +1,8 @@
 import os
+import sys
 import requests
 from PIL import Image
+from urllib.parse import urlparse
 
 # Download images from a base URL and save them to a directory
 def download_images(base_url, dir_name): 
@@ -12,7 +14,7 @@ def download_images(base_url, dir_name):
 
         # We have iterated over all images when we get a 404 response
         if response.status_code == 404:
-            print(f"\n-----------------------------------\nDownloaded {i - 1} images\n-----------------------------------" if i > 1 else "No images found")
+            print(f"\n-----------------------------------\nDownloaded {i - 1} images\n-----------------------------------" if i > 1 else f"No images found at: {base_url}")
             return
 
         # Stop if the request was unsuccessful
@@ -69,18 +71,41 @@ def concat_images_to_pdf(image_dir, pdf_path):
     print(f"\nPdf created at: {os.path.abspath(pdf_path)}\n")
 
 
-def main():
-    image_dir = "images"
-    base_url = "http://readonline.ebookstou.org/flipbook/40908/files/mobile"
+def images_exists(image_dir):
+    images = get_all_images(image_dir)
+    return len(images) > 0
 
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
+
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+
+
+def main(base_url):
+    image_dir = "images"
+    os.makedirs(image_dir, exist_ok=True)
+
+    if not images_exists(image_dir):
         download_images(base_url, image_dir)
     else: 
         print(f"\nSkipping download, found source images in directory: {os.path.abspath(image_dir)}")
 
-    concat_images_to_pdf(image_dir, "result.pdf")
+    if images_exists(image_dir):
+        concat_images_to_pdf(image_dir, "result.pdf")
+    else:
+        print("\nDid not create pdf file :-(")
 
 
 if __name__ == "__main__":
-    main()
+    # Override the base URL if a command line argument is provided
+    base_url = "http://readonline.ebookstou.org/flipbook/40908/files/mobile"
+    if len(sys.argv) > 1:
+        if not is_valid_url(sys.argv[1]):
+            print(f"Invalid base URL: {sys.argv[1]}")
+            sys.exit()
+        base_url = sys.argv[1]
+
+    main(base_url)
