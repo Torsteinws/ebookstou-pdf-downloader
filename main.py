@@ -32,17 +32,34 @@ def download_images(base_url, dir_name):
 
         i += 1
 
+def get_all_images(dir):
+    images = []
+    for filename in listdir(dir):
+        path = join(dir, filename)
+        if isfile(path):
+            extension = filename.lower().split('.')[-1]
+            if extension in ('jpg', 'jpeg', 'png'):
+                images.append(path)
+    return images    
+
+def open_images(image_paths):
+    images = []
+    for image_path in image_paths:
+        images.append(Image.open(image_path))
+    return images
 
 def convert_images_to_pdf(image_dir, pdf_path):
 
-    images = [Image.open(join(image_dir, f)) for f in listdir(image_dir) if isfile(join(image_dir, f)) and f.lower().split('.')[-1] in ('jpg', 'jpeg', 'png')]
+    image_paths = get_all_images(image_dir)
+    images = open_images(image_paths)
     
     # Check if any images were found
     if not images:
-        return print("No images found in directory")
-    
-    first_image = images[0]
+        print("No images found in directory")
+        return
+
     # Create a new PDF with the same mode, size, and format as the first image
+    first_image = images[0]
     pdf = first_image.convert('RGB').save(pdf_path, save_all=True, append_images=images[1:])
 
     print(f"\nPdf path: {os.path.abspath(pdf_path)}\n")
