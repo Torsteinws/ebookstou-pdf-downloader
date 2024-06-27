@@ -1,6 +1,4 @@
 import os
-from os import listdir
-from os.path import isfile, join
 import requests
 from PIL import Image
 
@@ -35,9 +33,9 @@ def download_images(base_url, dir_name):
 # Get a list of all paths to images in a directory
 def get_all_images(dir):
     images = []
-    for filename in listdir(dir):
-        path = join(dir, filename)
-        if isfile(path):
+    for filename in os.listdir(dir):
+        path = os.path.join(dir, filename)
+        if os.path.isfile(path):
             extension = filename.lower().split('.')[-1]
             if extension in ('jpg', 'jpeg', 'png'):
                 images.append(path)
